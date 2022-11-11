@@ -70,6 +70,7 @@
 #define MODEM_DBG(fmt,arg...) dprintf("%s: " fmt , m->name , ##arg)
 #define MODEM_ERR(fmt,arg...) eprintf("%s: " fmt , m->name , ##arg)
 
+short _MODEM_DO_ANSWER = 0;
 /* external symbols */
 extern int process_at_command(struct modem *m, char *buf);
 extern void *dp_runtime_create(struct modem *m);
@@ -1567,6 +1568,7 @@ int modem_recv_from_tty(struct modem *m, char *buf, int n)
 
 int modem_answer(struct modem *m)
 {
+        _MODEM_DO_ANSWER = 1;
         MODEM_DBG("modem answer...\n");
         if ( m->dp ) {
                 MODEM_ERR("dp %d is already exists.\n", m->dp->id);
@@ -1613,6 +1615,7 @@ static int modem_dial_start(struct modem *m)
 
 int modem_dial(struct modem *m)
 {
+    _MODEM_DO_ANSWER = 0;
 	int ret;
         MODEM_DBG("modem dial: %s...\n", m->dial_string);
 	m->dp_requested = 0;

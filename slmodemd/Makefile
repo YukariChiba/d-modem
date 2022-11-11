@@ -24,7 +24,8 @@ endif
 
 RM:= rm -f
 
-CFLAGS+= -Wall -g -O -I. -DCONFIG_DEBUG_MODEM
+# CFLAGS+= -Wall -g -O -I. -DCONFIG_DEBUG_MODEM
+CFLAGS+= -Wall -O1 -I. -DCONFIG_DEBUG_MODEM
 
 modem-objs:= \
 	modem.o modem_datafile.o modem_at.o modem_timer.o \

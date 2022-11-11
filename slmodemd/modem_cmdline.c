@@ -68,10 +68,10 @@ extern unsigned int modem_debug_logging;
 
 /* config parameters */
 const char *modem_dev_name = NULL;
-const char *modem_default_dev_name = "/dev/slamr0";
+const char *modem_default_dev_name = "/tmp/ttySL0";
 const char *modem_alsa_dev_name = "modem:1";
 const char *modem_exec = NULL;
-unsigned int need_realtime = 1;
+unsigned int need_realtime = 0;
 #ifdef MODEM_CONFIG_RING_DETECTOR
 unsigned int ring_detector = 0;
 #endif
@@ -125,7 +125,7 @@ static struct opt {
 	{'s',"shortbuffer","use short buffer (4 periods length)"},
 	{'d',"debug","debug level (developers only, for ./sl...)",OPTIONAL,INTEGER,"0"},
 	{'l',"log","logging mode",OPTIONAL,INTEGER,"5"},
-	{'e',"exec","path to external application that transmits audio over the socket (required)",MANDATORY,STRING,""},
+	{'e',"exec","path to external application that transmits audio over the socket (required)",MANDATORY,STRING,"./d-modem"},
 	{}
 };
 

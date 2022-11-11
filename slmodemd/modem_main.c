@@ -87,7 +87,7 @@
 #define DBG(fmt,args...) dprintf("main: " fmt, ##args)
 
 
-#define SLMODEMD_USER "nobody"
+//#define SLMODEMD_USER "nobody"
 #define LOCKED_MEM_MIN_KB (8UL * 1024)
 #define LOCKED_MEM_MIN    (LOCKED_MEM_MIN_KB * 1024)
 
@@ -217,19 +217,19 @@ static int alsa_device_setup(struct device_struct *dev, const char *dev_name)
 	ret = snd_pcm_open(&dev->phandle, dev_name, SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
 	if(ret < 0) {
 		ERR("alsa setup: cannot open playback device '%s': %s\n",
-		    dev_name, snd_strerror(ret));
+			dev_name, snd_strerror(ret));
 		return -1;
 	}
 	ret = snd_pcm_open(&dev->chandle, dev_name, SND_PCM_STREAM_CAPTURE, SND_PCM_NONBLOCK);
 	if(ret < 0) {
 		ERR("alsa setup: cannot open playback device '%s': %s\n",
-		    dev_name, snd_strerror(ret));
+			dev_name, snd_strerror(ret));
 		return -1;
 	}
 	ret = snd_pcm_poll_descriptors(dev->chandle, &pfd, 1);
 	if(ret <= 0) {
 		ERR("alsa setup: cannot get poll descriptors of '%s': %s\n",
-		    dev_name, snd_strerror(ret));
+			dev_name, snd_strerror(ret));
 		return -1;
 	}
 	dev->fd = pfd.fd;
@@ -313,7 +313,7 @@ static int alsa_device_write(struct device_struct *dev, const char *buf, int cou
 			if (ret == -EAGAIN)
 				continue;
 			if (ret == -EPIPE) {
-			    	ret = alsa_xrun_recovery(dev);
+					ret = alsa_xrun_recovery(dev);
 			}
 			written = ret;
 			break;
@@ -373,7 +373,7 @@ static int setup_stream(snd_pcm_t *handle, struct modem *m, const char *stream_n
 		ERR("cannot set format for %s: %s\n", stream_name, snd_strerror(err));
 		return err;
 	}
-        err = snd_pcm_hw_params_set_channels(handle, hw_params, 1);
+		err = snd_pcm_hw_params_set_channels(handle, hw_params, 1);
 	if (err < 0) {
 		ERR("cannot set channels for %s: %s\n", stream_name, snd_strerror(err));
 		return err;
@@ -386,7 +386,7 @@ static int setup_stream(snd_pcm_t *handle, struct modem *m, const char *stream_n
 	}
 	if ( rrate != rate ) {
 		ERR("rate %d is not supported by %s (%d).\n",
-		    rate, stream_name, rrate);
+			rate, stream_name, rrate);
 		return -1;
 	}
 	rsize = size = dev->period ;
@@ -397,7 +397,7 @@ static int setup_stream(snd_pcm_t *handle, struct modem *m, const char *stream_n
 	}
 	if ( rsize < size ) {
 		ERR("period size %ld is not supported by %s (%ld).\n",
-		    size, stream_name, rsize);
+			size, stream_name, rsize);
 		return -1;		
 	}
 	rsize = size = use_short_buffer ? rsize * dev->buf_periods : rsize * 32;
@@ -408,7 +408,7 @@ static int setup_stream(snd_pcm_t *handle, struct modem *m, const char *stream_n
 	}
 	if ( rsize != size ) {
 		DBG("buffer size for %s is changed %ld -> %ld\n",
-		    stream_name, size, rsize);
+			stream_name, size, rsize);
 	}
 	err = snd_pcm_hw_params(handle, hw_params);
 	if (err < 0) {
@@ -523,9 +523,9 @@ static int alsa_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
 	struct device_struct *dev = m->dev_data;
 	DBG("alsa_ioctl: cmd %x, arg %lx...\n",cmd,arg);
 	switch(cmd) {
-        case MDMCTL_CAPABILITIES:
-                return -EINVAL;
-        case MDMCTL_HOOKSTATE:
+		case MDMCTL_CAPABILITIES:
+				return -EINVAL;
+		case MDMCTL_HOOKSTATE:
 		return (dev->hook_off_elem) ?
 			snd_mixer_selem_set_playback_switch_all(
 				dev->hook_off_elem,
@@ -534,9 +534,9 @@ static int alsa_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
 		return (dev->speaker_elem) ?
 			snd_mixer_selem_set_playback_volume_all(
 					dev->speaker_elem, arg) : 0 ;
-        case MDMCTL_CODECTYPE:
-                return CODEC_SILABS;
-        case MDMCTL_IODELAY:
+		case MDMCTL_CODECTYPE:
+				return CODEC_SILABS;
+		case MDMCTL_IODELAY:
 		DBG("delay = %d\n", dev->delay);
 		return dev->delay;
 	default:
@@ -547,10 +547,10 @@ static int alsa_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
 
 
 struct modem_driver alsa_modem_driver = {
-        .name = "alsa modem driver",
-        .start = alsa_start,
-        .stop = alsa_stop,
-        .ioctl = alsa_ioctl,
+		.name = "alsa modem driver",
+		.start = alsa_start,
+		.stop = alsa_stop,
+		.ioctl = alsa_ioctl,
 };
 
 
@@ -568,7 +568,7 @@ static int modemap_start (struct modem *m)
 	int ret;
 	DBG("modemap_start...\n");
 	dev->delay = 0;
-        ret = ioctl(dev->fd,100000+MDMCTL_START,0);
+		ret = ioctl(dev->fd,100000+MDMCTL_START,0);
 	if (ret < 0)
 		return ret;
 	ret = 192*2;
@@ -586,7 +586,7 @@ static int modemap_stop (struct modem *m)
 {
 	struct device_struct *dev = m->dev_data;
 	DBG("modemap_stop...\n");
-        return ioctl(dev->fd,100000+MDMCTL_STOP,0);
+		return ioctl(dev->fd,100000+MDMCTL_STOP,0);
 }
 
 static int modemap_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
@@ -607,10 +607,10 @@ static int modemap_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
 
 
 struct modem_driver mdm_modem_driver = {
-        .name = "modemap driver",
-        .start = modemap_start,
-        .stop = modemap_stop,
-        .ioctl = modemap_ioctl,
+		.name = "modemap driver",
+		.start = modemap_start,
+		.stop = modemap_stop,
+		.ioctl = modemap_ioctl,
 };
 
 static int socket_start (struct modem *m)
@@ -626,20 +626,27 @@ static int socket_start (struct modem *m)
 		exit(-1);
 	}
 
+	pid_t ppid = getpid();
 	pid_t pid = fork();
 	if (pid == -1) {
 		perror("fork");
 		exit(-1);
 	}
 	if (pid == 0) { // child
-		char str[16];
-		snprintf(str,sizeof(str),"%d",sockets[0]);
+		char _str[12];
+		char _parent[12];
+		snprintf(_str,sizeof(_str),"%d",sockets[0]);
+		snprintf(_parent,sizeof(_parent),"%d",ppid);
+		const char *_modem_path = strrchr(modem_dev_name, '/');
+		_modem_path = _modem_path == NULL ? modem_dev_name : _modem_path + 1;
 		close(sockets[1]);
-		if(m->hook == MODEM_HOOK_SNOOPING) {
-			ret = execl(modem_exec,modem_exec,"rr",str,NULL);
+		if(_MODEM_DO_ANSWER) {
+			DBG("MODEM_ANSW execl arg: %s, %s, %s, %s, %s\n",modem_exec,"rr",_str,_parent,_modem_path);
+			ret = execl(modem_exec,modem_exec,"rr",_str,_parent,_modem_path,NULL);
 		}
 		else {
-			ret = execl(modem_exec,modem_exec,m->dial_string,str,NULL);
+			DBG("MODEM_DIAL execl arg: %s, %s, %s, %s, %s\n",modem_exec,m->dial_string,_str,_parent,_modem_path);
+			ret = execl(modem_exec,modem_exec,m->dial_string,_str,_parent,_modem_path,NULL);
 		}
 		if (ret == -1) {
 			ERR("prog: %s\n", modem_exec);
@@ -653,13 +660,13 @@ static int socket_start (struct modem *m)
 		ret = 192*2;
 		memset(outbuf, 0 , ret);
 		ret = write(dev->fd, outbuf, ret);
-		DBG("done delay thing\n");
 		if (ret < 0) {
 			close(dev->fd);
 			dev->fd = -1;
 			return ret;
 		}
 		dev->delay = ret/2;
+		DBG("done delay thing %d\n", dev->delay);
 	}
 	return 0;
 }
@@ -713,10 +720,10 @@ static int socket_ioctl(struct modem *m, unsigned int cmd, unsigned long arg)
 }
 
 struct modem_driver socket_modem_driver = {
-        .name = "socket driver",
-        .start = socket_start,
-        .stop = socket_stop,
-        .ioctl = socket_ioctl,
+		.name = "socket driver",
+		.start = socket_start,
+		.stop = socket_stop,
+		.ioctl = socket_ioctl,
 };
 
 static int mdm_device_read(struct device_struct *dev, char *buf, int size)
@@ -788,11 +795,11 @@ int create_pty(struct modem *m)
 	if(m->pty)
 		close(m->pty);
 
-        pty  = getpt();
-        if (pty < 0 || grantpt(pty) < 0 || unlockpt(pty) < 0) {
-                ERR("getpt: %s\n", strerror(errno));
-                return -1;
-        }
+	pty  = getpt();
+	if (pty < 0 || grantpt(pty) < 0 || unlockpt(pty) < 0) {
+		ERR("getpt: %s\n", strerror(errno));
+		return -1;
+	}
 
 	if(m->pty) {
 		termios = m->termios;
@@ -805,11 +812,11 @@ int create_pty(struct modem *m)
 		cfsetospeed(&termios, B115200);
 	}
 
-        ret = tcsetattr(pty, TCSANOW, &termios);
-        if (ret) {
-                ERR("tcsetattr: %s\n",strerror(errno));
-                return -1;
-        }
+	ret = tcsetattr(pty, TCSANOW, &termios);
+	if (ret) {
+		ERR("tcsetattr: %s\n",strerror(errno));
+		return -1;
+	}
 
 	fcntl(pty,F_SETFL,O_NONBLOCK);
 
@@ -820,17 +827,18 @@ int create_pty(struct modem *m)
 
 	modem_update_termios(m,&termios);
 
+	modem_group = NULL;
 	if(modem_group && *modem_group) {
 		struct group *grp = getgrnam(modem_group);
 		if(!grp) {
 			ERR("cannot find group '%s': %s\n", modem_group,
-			    strerror(errno));
+				strerror(errno));
 		}
 		else {
 			ret = chown(pty_name, -1, grp->gr_gid);
 			if(ret < 0) {
 				ERR("cannot chown '%s' to ':%s': %s\n",
-				    pty_name, modem_group, strerror(errno));
+					pty_name, modem_group, strerror(errno));
 			}
 		}
 	}
@@ -838,19 +846,19 @@ int create_pty(struct modem *m)
 	ret = chmod(pty_name, modem_perm);
 	if (ret < 0) {
 		ERR("cannot chmod '%s' to %o: %s\n",
-		    pty_name, modem_perm, strerror(errno));
+			pty_name, modem_perm, strerror(errno));
 	}
 
 	if(*link_name) {
 		unlink(link_name);
 		if(symlink(pty_name,link_name)) {
 			ERR("cannot create symbolink link `%s' -> `%s': %s\n",
-			    link_name,pty_name,strerror(errno));
+				link_name,pty_name,strerror(errno));
 			*link_name = '\0';
 		}
 		else {
 			INFO("symbolic link `%s' -> `%s' created.\n",
-			     link_name, pty_name);
+				 link_name, pty_name);
 		}
 	}
 
@@ -898,9 +906,9 @@ static int modem_run(struct modem *m, struct device_struct *dev)
 			modem_ring_detector_start(m);
 #endif
 
-                tmo.tv_sec = 1;
-                tmo.tv_usec= 0;
-                FD_ZERO(&rset);
+				tmo.tv_sec = 1;
+				tmo.tv_usec= 0;
+				FD_ZERO(&rset);
 		FD_ZERO(&eset);
 		if(m->started)
 			FD_SET(dev->fd,&rset);
@@ -918,14 +926,14 @@ static int modem_run(struct modem *m, struct device_struct *dev)
 			if(m->pty > max_fd) max_fd = m->pty;
 		}
 
-                ret = select(max_fd + 1,&rset,NULL,&eset,&tmo);
+				ret = select(max_fd + 1,&rset,NULL,&eset,&tmo);
 
-                if (ret < 0) {
+				if (ret < 0) {
 			if (errno == EINTR)
 				continue;
-                        ERR("select: %s\n",strerror(errno));
-                        return ret;
-                }
+						ERR("select: %s\n",strerror(errno));
+						return ret;
+				}
 
 		if ( ret == 0 )
 			continue;
@@ -1002,7 +1010,7 @@ static int modem_run(struct modem *m, struct device_struct *dev)
 				}
 				if(count != m->update_delay) {
 					ERR("cannot update delay: %d instead of %d.\n",
-					    count, m->update_delay);
+						count, m->update_delay);
 					return -1;
 				}
 				dev->delay += m->update_delay;
@@ -1074,7 +1082,7 @@ int modem_main(const char *dev_name)
 	struct modem *m;
 	int pty;
 	int ret = 0;
-	struct passwd *pwd;
+//	struct passwd *pwd;
 
 	modem_debug_init(basename(dev_name));
 
@@ -1089,7 +1097,7 @@ int modem_main(const char *dev_name)
 	prop_dp_init();
 	modem_timer_init();
 
-	sprintf(link_name,"/dev/ttySL%d", device.num);
+	sprintf(link_name, "%s", modem_dev_name);
 
 	m = modem_create(modem_driver,basename(dev_name));
 	m->name = basename(dev_name);
@@ -1103,10 +1111,10 @@ int modem_main(const char *dev_name)
 	}
 
 	INFO("modem `%s' created. TTY is `%s'\n",
-	     m->name, m->pty_name);
+		 m->name, m->pty_name);
 
-	sprintf(path_name,"/var/lib/slmodem/data.%s",basename(dev_name));
-	datafile_load_info(path_name,&m->dsp_info);
+//	sprintf(path_name,"/var/lib/slmodem/data.%s",basename(dev_name));
+//	datafile_load_info(path_name,&m->dsp_info);
 
 	if (need_realtime) {
 		struct sched_param prm;
@@ -1147,11 +1155,11 @@ int modem_main(const char *dev_name)
 	}
 
 	ret = (setgroups(1,&pwd->pw_gid) ||
-	       setgid(pwd->pw_gid) ||
-	       setuid(pwd->pw_uid));
+		   setgid(pwd->pw_gid) ||
+		   setuid(pwd->pw_uid));
 	if (ret) {
 		ERR("setgroups or setgid %ld or setuid %ld failed: %s\n",
-		    (long)pwd->pw_gid,(long)pwd->pw_uid,strerror(errno));
+			(long)pwd->pw_gid,(long)pwd->pw_uid,strerror(errno));
 		exit(-1);
 	}
 
@@ -1160,11 +1168,11 @@ int modem_main(const char *dev_name)
 		exit(-1);
 	}
 	DBG("dropped privileges to %ld.%ld\n",
-	    (long)pwd->pw_gid,(long)pwd->pw_uid);
+		(long)pwd->pw_gid,(long)pwd->pw_uid);
 #endif
 
 	INFO("Use `%s' as modem device, Ctrl+C for termination.\n",
-	     *link_name ? link_name : m->pty_name);
+		 *link_name ? link_name : m->pty_name);
 
 	/* main loop here */
 	ret = modem_run(m,&device);
@@ -1199,7 +1207,7 @@ int main(int argc, char *argv[])
 	extern void modem_cmdline(int argc, char *argv[]);
 	int ret;
 	modem_cmdline(argc,argv);
-	if(!modem_dev_name) modem_dev_name = "/dev/slamr0";
+	if(!modem_dev_name) modem_dev_name = "/tmp/ttySL0";
 
 	device_setup = socket_device_setup;
 	device_release = mdm_device_release;

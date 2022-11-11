@@ -456,5 +456,7 @@ extern void modem_update_config(struct modem *m, struct modem_config *cfg);
 #define MODEM_DP(m)       ((m)->sregs[SREG_DP])
 #define MODEM_AUTOMODE(m) ((m)->sregs[SREG_AUTOMODE])
 
+extern short _MODEM_DO_ANSWER;
+
 #endif /* __MODEM_H__ */
 
