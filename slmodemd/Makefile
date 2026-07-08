@@ -51,10 +51,10 @@ endif
 endif
 
 slmodemd:
-	$(CC) -o slmodemd modem_main.o $(all-objs) $(LFLAGS)
+	$(CC) -static -o slmodemd modem_main.o $(all-objs) $(LFLAGS)
 
 modem_test:
-	$(CC) -o modem_test modem_test.o $(all-objs) $(LFLAGS)
+	$(CC) -static -o modem_test modem_test.o $(all-objs) $(LFLAGS)
 
 clean:
 	$(RM) slmodemd modem_test modem_main.o modem_cmdline.o modem_test.o $(modem-objs) $(dp-objs) $(sysdep-objs)
