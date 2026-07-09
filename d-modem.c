@@ -350,15 +350,37 @@ int main(int argc, char *argv[]) {
 	/* Add UDP transport. */
 	{
 		pjsua_transport_config cfg;
+		int max_port = 65535;
 
 		pjsua_transport_config_default(&cfg);
-		if (mode)
-			cfg.port = sip_port;
-		if (getenv("PJSIP_IPV6"))
-		status = pjsua_transport_create(PJSIP_TRANSPORT_UDP6, &cfg, &transport_id);
-		else
-		status = pjsua_transport_create(PJSIP_TRANSPORT_UDP, &cfg, &transport_id);
-		if (status != PJ_SUCCESS) error_exit("Error creating transport", status);
+
+		while (sip_port <= max_port) {
+			if (mode)
+				cfg.port = sip_port;
+			if (getenv("PJSIP_IPV6"))
+				status = pjsua_transport_create(PJSIP_TRANSPORT_UDP6, &cfg, &transport_id);
+			else
+				status = pjsua_transport_create(PJSIP_TRANSPORT_UDP, &cfg, &transport_id);
+
+			if (status == PJ_SUCCESS) {
+				if (mode)
+					PJ_LOG(2,(__FILE__, "SIP transport created on port %d", sip_port));
+				break;
+			}
+
+			/* Port is in use, try next port */
+			if (mode) {
+				PJ_LOG(2,(__FILE__, "Port %d is in use, trying %d", sip_port, sip_port + 1));
+				sip_port++;
+			} else {
+				/* In dial mode with no specific port, just fail */
+				error_exit("Error creating transport", status);
+			}
+		}
+
+		if (sip_port > max_port) {
+			error_exit("Could not find an available SIP port", PJ_EINVAL);
+		}
 	}
 	char buf[384];
 	//printf("Initializing pool\n");
